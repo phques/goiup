@@ -99,22 +99,24 @@ func (h *Handle) ResetAttribute(name string) {
 //	numAttributes := int(C.IupGetAllAttributes(h.cptr(), nil, 0))
 //}
 
-func (h *Handle) SetAttributes(str string) {
+func (h *Handle) SetAttributes(str string) *Handle {
 	cStr := C.CString(str)
 	defer C.free(unsafe.Pointer(cStr))
 	C.IupSetAttributes(h.cptr(), cStr)
+	return h
 }
 
 func (h *Handle) GetAttributes() string {
 	return C.GoString(C.IupGetAttributes(h.cptr()))
 }
 
-func (h *Handle) SetAttribute(name, value string) {
+func (h *Handle) SetAttribute(name, value string) *Handle {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
 	cValue := C.CString(value)
 	defer C.free(unsafe.Pointer(cValue))
 	C.IupSetStrAttribute(h.cptr(), cName, cValue)
+	return h
 }
 
 func (h *Handle) SetInt(name string, value int) {
