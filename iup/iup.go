@@ -3,8 +3,11 @@ package iup
 /*
 #cgo linux LDFLAGS: -liup
 #cgo windows LDFLAGS: -liup -liupstub -luuid -lgdi32 -lole32 -lcomctl32 -lcomdlg32
-#include <iup.h>
+#include <iup/iup.h>
 #include <stdlib.h>
+
+extern int iupIdleCbProxy(void);
+
 */
 import "C"
 
@@ -153,4 +156,43 @@ func GetHandle(name string) *Handle {
 
 func GetFocus() *Handle {
 	return (*Handle)(C.IupGetFocus())
+}
+
+// The user idle callback function can use a select on input channels and a time.After() to process
+// external events without taking too much CPU (idle loop can behave almost like an infinite loop otherwise)
+// Example:
+// func idleFunc() int {
+//     select {
+//     // check for command
+//     case cmd := <-idleChan:
+//         // process cmd, can access GUI here
+//     case <-time.After(time.Duration(150 * time.Millisecond)):
+//     }
+//     return iup.DEFAULT
+// }
+type IdleFunc func() int
+
+var idleFunc IdleFunc
+
+// This is the callback proxy called by IUP on idle,
+// we will call the actual Go function from here
+//export iupIdleCbProxy
+func iupIdleCbProxy() C.int {
+	return C.int(idleFunc())
+}
+
+// SetIdleFunc sets the idle callback
+// Call it with nil to stop idle loop
+func SetIdleFunc(f IdleFunc) {
+	// save the Go func to call on idle
+	idleFunc = f
+
+	// Set function iupIdleCbProxy as the IUP idle callback
+	cName := C.CString(C.IUP_IDLE_ACTION)
+	defer C.free(unsafe.Pointer(cName))
+	if f != nil {
+		C.IupSetFunction(cName, (C.Icallback)(C.iupIdleCbProxy))
+	} else {
+		C.IupSetFunction(cName, (C.Icallback)(nil))
+	}
 }
