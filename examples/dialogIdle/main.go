@@ -1,6 +1,7 @@
 package main
 
 import (
+	"C"
 	"fmt"
 	"github.com/gonutz/goiup/iup"
 	"runtime"
@@ -62,32 +63,17 @@ func pushBtnCB() int {
 	return iup.DEFAULT
 }
 
-//----------
-
-type Toto struct {
-	val int
-}
-
-func (toto *Toto) test1() *Toto {
-	fmt.Println("test1 val", toto.val)
-	return toto
-}
-
-func (toto *Toto) test2() *Toto {
-	fmt.Println("test2 val", toto.val)
-	return toto
-}
-
 func createDialog() {
-	box := iup.Vbox().SetAttributes("NMARGIN=5x5, NGAP=5x5, EXPAND=YES")
-	myWidgets.MainDialog = iup.Dialog(box)
-	myWidgets.MainDialog.SetAttributes("TITLE=Android Push, MARGINS=5x5, SIZE=150x100")
-
+	//	box := iup.Vbox().SetAttributes("NMARGIN=5x5, NGAP=5x5, EXPAND=YES")
+	//	myWidgets.MainDialog = iup.Dialog(box)
+	//	myWidgets.MainDialog.SetAttributes("TITLE=Android Push, MARGINS=5x5, SIZE=150x100")
+	C.ledLoad()
 }
 
 //----------
 
 func main() {
+
 	runtime.LockOSThread()
 
 	iup.Open()
