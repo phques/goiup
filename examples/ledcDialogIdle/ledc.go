@@ -1,4 +1,4 @@
-// This file defines load_led() C func to create the GUI 'widgets'
+// This file defines led_load() C func to create the GUI 'widgets'
 package main
 
 /*
@@ -13,7 +13,6 @@ package main
 #include <iup/iup.h>
 
 static Ihandle* named[      6 ];
-
 
 void led_load (void)
 {
@@ -51,13 +50,14 @@ void led_load (void)
           "NGAP", "5x5",
           "EXPAND", "YES", NULL )
       ),
-        "TITLE", "Destination", NULL ),
+        "TITLE", "Destination",
+        "SIZE", "x150", NULL ),
       IupSetAtt( NULL, IupHbox(
         IupFill(),
         named[4] = IupSetAtt( "pushButton", IupButton( "Push", "onPushButton" ), NULL ),
       NULL),
         "EXPAND", "HORIZONTAL",
-        "SIZE", "150", NULL ),
+        "SIZE", "200", NULL ),
     NULL),
       "NMARGIN", "5x5",
       "NGAP", "5x5",

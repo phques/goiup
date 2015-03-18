@@ -11,7 +11,7 @@ mainDialog = DIALOG[TITLE="Android Push", MARGINS=5x5]
       )
     ),
     
-    frame[TITLE="Destination"](
+    frame[TITLE="Destination", SIZE=x150](
       vbox[NMARGIN=5x5, NGAP=5x5, EXPAND=YES](
         vbox(
           label("Root"),
@@ -26,7 +26,7 @@ mainDialog = DIALOG[TITLE="Android Push", MARGINS=5x5]
     ),
     
     # by setting size=150 horizontal, we force the whole dialog to be large
-    hbox[EXPAND=HORIZONTAL, SIZE=150](
+    hbox[EXPAND=HORIZONTAL, SIZE=200](
       fill(),
       pushButton = button("Push", onPushButton)
     )

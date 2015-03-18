@@ -43,13 +43,14 @@ void led_load (void)
           "NGAP", "5x5", 
           "EXPAND", "YES", NULL )
       ), 
-        "TITLE", "Destination", NULL ),
+        "TITLE", "Destination", 
+        "SIZE", "x150", NULL ),
       IupSetAtt( NULL, IupHbox(
         IupFill(),
         named[4] = IupSetAtt( "pushButton", IupButton( "Push", "onPushButton" ), NULL ),
       NULL), 
         "EXPAND", "HORIZONTAL", 
-        "SIZE", "150", NULL ),
+        "SIZE", "200", NULL ),
     NULL), 
       "NMARGIN", "5x5", 
       "NGAP", "5x5", 

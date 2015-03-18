@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/gonutz/goiup/iup"
-	"github.com/gonutz/goiup/iuputil"
+	//	"github.com/gonutz/goiup/iuputil"
 	"runtime"
 	"time"
 )
 
 // Will hold Handles to widgets,
-// filled by iuputil.FetchWidgets
 type MyWidgets struct {
 	MainDialog *iup.Handle `IUP:"mainDialog"`
 	LocalRoot  *iup.Handle `IUP:"localRoot"`
@@ -64,31 +63,60 @@ func pushBtnCB() int {
 	return iup.DEFAULT
 }
 
-//----------
-
 func createDialog() {
-	// load GUI definitions from file
-	if errStr := iup.Load("androidGUI.led"); errStr != "" {
-		panic(errStr)
-	}
 
-	// get widgets handles into myWidgets
-	if err := iuputil.FetchWidgets(&myWidgets); err != nil {
-		panic(err)
-		return
-	}
+	// Local Root frame + text
+	localRoot := iup.Text("").SetAttributes(`EXPAND=HORIZONTAL, MARGIN=5`)
+	localRootVbox := iup.Vbox(localRoot).SetAttributes(`NMARGIN=5x5, NGAP=5x5, EXPAND=YES`)
+	localRootFrame := iup.Frame(localRootVbox).SetAttributes(`TITLE="Local Root"`)
 
+	// Destination frame + vbox
+	// Destination - Root list
+	destRoot := iup.List("").
+		SetAttributes(`1="aaa",2="bbb",3="ccc", DROPDOWN="YES"`).
+		SetAttributes(`EXPAND=HORIZONTAL`)
+	destVbox1_1 := iup.Vbox(iup.Label("Root"), destRoot)
+
+	// Destination - Files list
+	destFiles := iup.List("").SetAttributes(`EXPAND=YES`)
+	destVbox1_2 := iup.Vbox(iup.Label("Files"), destFiles)
+
+	// Destination - frame & vbox
+	destVbox1 := iup.Vbox(destVbox1_1, destVbox1_2).
+		SetAttributes(`NMARGIN=5x5, NGAP=5x5, EXPAND=YES`)
+	destFrame := iup.Frame(destVbox1).SetAttributes(`TITLE="Destination", SIZE=x150`)
+
+	// buttons - Push
+	pushButt := iup.Button("Push", "")
+	buttsHbox := iup.Hbox(iup.Fill(), pushButt).
+		// forces dialog to be wider
+		SetAttributes(`EXPAND=HORIZONTAL, SIZE=200`)
+
+	// main dialog + vbox
+	mainvbox := iup.Vbox(localRootFrame, destFrame, buttsHbox).
+		SetAttributes("NMARGIN=5x5, NGAP=5x5, EXPAND=YES")
+
+	mainDialog := iup.Dialog(mainvbox).
+		SetAttributes(`TITLE="Android Push", MARGINS=5x5`)
+
+	// save handles
+	myWidgets.LocalRoot = localRoot
+	myWidgets.MainDialog = mainDialog
+	myWidgets.Push = pushButt
+	myWidgets.Files = destFiles
 }
 
 //----------
 
 func main() {
+
 	runtime.LockOSThread()
 
 	iup.Open()
 	defer iup.Close()
 
 	createDialog()
+
 	myWidgets.Push.SetCallback("ACTION", pushBtnCB)
 
 	// prepare a channel for the idle callback msgs,
