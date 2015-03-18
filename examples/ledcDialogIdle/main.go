@@ -1,9 +1,12 @@
 package main
 
+//extern void led_load(void);
+import "C"
+
 import (
-	"C"
 	"fmt"
 	"github.com/gonutz/goiup/iup"
+	"github.com/gonutz/goiup/iuputil"
 	"runtime"
 	"time"
 )
@@ -64,10 +67,15 @@ func pushBtnCB() int {
 }
 
 func createDialog() {
-	//	box := iup.Vbox().SetAttributes("NMARGIN=5x5, NGAP=5x5, EXPAND=YES")
-	//	myWidgets.MainDialog = iup.Dialog(box)
-	//	myWidgets.MainDialog.SetAttributes("TITLE=Android Push, MARGINS=5x5, SIZE=150x100")
-	C.ledLoad()
+	// call generated C function (gen from LED file with ledc)
+	C.led_load()
+
+	// get widgets handles into myWidgets
+	if err := iuputil.FetchWidgets(&myWidgets); err != nil {
+		fmt.Println("FetchWidgets failed : ", err)
+		return
+	}
+
 }
 
 //----------
@@ -81,7 +89,7 @@ func main() {
 
 	createDialog()
 
-	//	myWidgets.Push.SetCallback("ACTION", pushBtnCB)
+	myWidgets.Push.SetCallback("ACTION", pushBtnCB)
 
 	// prepare a channel for the idle callback msgs,
 	// start a goroutine to send a msg on the channel after some time
@@ -93,7 +101,7 @@ func main() {
 	}()
 
 	// hook our idle func
-	//	iup.SetIdleFunc(idleFunc1)
+	iup.SetIdleFunc(idleFunc1)
 
 	// show dialog and loop until last window closed
 	myWidgets.MainDialog.Show()

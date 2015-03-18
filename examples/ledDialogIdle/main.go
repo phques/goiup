@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/gonutz/goiup/examples/ledDialogIdle/iuputil"
 	"github.com/gonutz/goiup/iup"
+	"github.com/gonutz/goiup/iuputil"
 	"runtime"
 	"time"
 )
@@ -66,24 +66,29 @@ func pushBtnCB() int {
 
 //----------
 
+func createDialog() {
+	// load GUI definitions from file
+	if errStr := iup.Load("androidGUI.led"); errStr != "" {
+		panic(errStr)
+	}
+
+	// get widgets handles into myWidgets
+	if err := iuputil.FetchWidgets(&myWidgets); err != nil {
+		panic("FetchWidgets failed : ", err)
+		return
+	}
+
+}
+
+//----------
+
 func main() {
 	runtime.LockOSThread()
 
 	iup.Open()
 	defer iup.Close()
 
-	// load GUI definitions from file
-	if errStr := iup.Load("androidGUI.led"); errStr != "" {
-		fmt.Println(errStr)
-		return
-	}
-
-	// get widgets handles into myWidgets
-	if err := iuputil.FetchWidgets(&myWidgets); err != nil {
-		fmt.Println("FetchWidgets failed : ", err)
-		return
-	}
-
+	createDialog()
 	myWidgets.Push.SetCallback("ACTION", pushBtnCB)
 
 	// prepare a channel for the idle callback msgs,

@@ -18,14 +18,14 @@ func FetchWidgets(structPtr interface{}) error {
 	// check that it is of type Ptr
 	valueOf := reflect.ValueOf(structPtr)
 	if valueOf.Kind() != reflect.Ptr {
-		return fmt.Errorf("parameter is not ptr to struct of *Ihandles")
+		return fmt.Errorf("FetchWidgets, parameter is not ptr to struct of *Ihandles")
 	}
 
 	// Get value pointed to,
 	// check that it is of type Struct
 	elem := valueOf.Elem()
 	if elem.Kind() != reflect.Struct {
-		return fmt.Errorf("parameter is not ptr to struct of *Ihandles")
+		return fmt.Errorf("FetchWidgets, parameter is not ptr to struct of *Ihandles")
 	}
 
 	typeOfElem := elem.Type()
@@ -45,12 +45,12 @@ func FetchWidgets(structPtr interface{}) error {
 
 		// check that field is of type *iup.Ihandle
 		if field.Type() != reflect.TypeOf(ihandlePtr) {
-			return fmt.Errorf("field %q is not of type *Ihandle", fullFieldName)
+			return fmt.Errorf("FetchWidgets, field %q is not of type *Ihandle", fullFieldName)
 		}
 
 		// check that we can set/write-to the field
 		if !field.CanSet() {
-			return fmt.Errorf("field %q is not settable", fullFieldName)
+			return fmt.Errorf("FetchWidgets, field %q is not settable", fullFieldName)
 		}
 
 		// lookup field tag IUP:"iupName"
@@ -63,7 +63,7 @@ func FetchWidgets(structPtr interface{}) error {
 		// Lookup IUP entity, error if nil
 		ihandlePtr = iup.GetHandle(iupName)
 		if ihandlePtr == nil {
-			return fmt.Errorf("could not find %q for field %q", iupName, fullFieldName)
+			return fmt.Errorf("FetchWidgets, could not find %q for field %q", iupName, fullFieldName)
 		}
 
 		// finally, set the field value = found IUP entity
