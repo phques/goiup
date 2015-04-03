@@ -3,7 +3,7 @@ package iup
 /*
 #cgo linux LDFLAGS: -liup
 #cgo windows LDFLAGS: -liup -liupstub -luuid -lgdi32 -lole32 -lcomctl32 -lcomdlg32
-#include <iup/iup.h>
+#include <iup.h>
 #include <stdlib.h>
 
 extern int iupIdleCbProxy(void);
