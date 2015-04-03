@@ -64,6 +64,24 @@ func pushBtnCB() int {
 	return iup.DEFAULT
 }
 
+func (w *MyWidgets) pushBtnCB() int {
+	// do some work (in diff goroutine)
+	go func() {
+		fmt.Println("MyWidgets.pushBtnAction")
+
+		// fake work
+		time.Sleep(time.Duration(1) * time.Second)
+
+		// try to update GUI .. might not work if different thread !
+		w.Files.SetAttribute("APPENDITEM", "push pressed live")
+
+		// but this should work
+		cmdChan <- "addtofiles"
+	}()
+
+	return iup.DEFAULT
+}
+
 //----------
 
 func createDialog() {
@@ -89,7 +107,8 @@ func main() {
 	defer iup.Close()
 
 	createDialog()
-	myWidgets.Push.SetCallback("ACTION", pushBtnCB)
+	//myWidgets.Push.SetCallback("ACTION", pushBtnCB)
+	myWidgets.Push.SetCallback("ACTION", myWidgets.pushBtnCB)
 
 	// prepare a channel for the idle callback msgs,
 	// start a goroutine to send a msg on the channel after some time
