@@ -7,25 +7,25 @@ import (
 	"reflect"
 )
 
-// FetchWidgets populates all the fields of structPtr with IUP entities (ie. from LED file)
+// FetchControls populates all the fields of structPtr with IUP entities (ie. from LED file)
 // structPtr must be a pointer to a struct with fields of type *iup.Ihandle
 // The name used for lookup in IUP will be the fieldname or
 // the iupName specified by a field tag : Toto *Ihandle `IUP:"iupName"`
 // Note that only exported fields can be written to.
-func FetchWidgets(structPtr interface{}) error {
+func FetchControls(structPtr interface{}) error {
 
 	// Get valueOf structPtr by reflection,
 	// check that it is of type Ptr
 	valueOf := reflect.ValueOf(structPtr)
 	if valueOf.Kind() != reflect.Ptr {
-		return fmt.Errorf("FetchWidgets, parameter is not ptr to struct of *Ihandles")
+		return fmt.Errorf("FetchControls, parameter is not ptr to struct of *Ihandles")
 	}
 
 	// Get value pointed to,
 	// check that it is of type Struct
 	elem := valueOf.Elem()
 	if elem.Kind() != reflect.Struct {
-		return fmt.Errorf("FetchWidgets, parameter is not ptr to struct of *Ihandles")
+		return fmt.Errorf("FetchControls, parameter is not ptr to struct of *Ihandles")
 	}
 
 	typeOfElem := elem.Type()
@@ -45,12 +45,12 @@ func FetchWidgets(structPtr interface{}) error {
 
 		// check that field is of type *iup.Ihandle
 		if field.Type() != reflect.TypeOf(ihandlePtr) {
-			return fmt.Errorf("FetchWidgets, field %q is not of type *Ihandle", fullFieldName)
+			return fmt.Errorf("FetchControls, field %q is not of type *Ihandle", fullFieldName)
 		}
 
 		// check that we can set/write-to the field
 		if !field.CanSet() {
-			return fmt.Errorf("FetchWidgets, field %q is not settable", fullFieldName)
+			return fmt.Errorf("FetchControls, field %q is not settable", fullFieldName)
 		}
 
 		// lookup field tag IUP:"iupName"
@@ -63,12 +63,12 @@ func FetchWidgets(structPtr interface{}) error {
 		// Lookup IUP entity, error if nil
 		ihandlePtr = iup.GetHandle(iupName)
 		if ihandlePtr == nil {
-			return fmt.Errorf("FetchWidgets, could not find %q for field %q", iupName, fullFieldName)
+			return fmt.Errorf("FetchControls, could not find %q for field %q", iupName, fullFieldName)
 		}
 
 		// finally, set the field value = found IUP entity
 		field.Set(reflect.ValueOf(ihandlePtr))
-		fmt.Println("  ->found widget ", iupName)
+		fmt.Println("  ->found control ", iupName)
 	}
 
 	return nil

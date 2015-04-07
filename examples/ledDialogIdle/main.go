@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-// Will hold Handles to widgets,
-// filled by iuputil.FetchWidgets
-type MyWidgets struct {
+// Will hold Handles to controls,
+// filled by iuputil.FetchControls
+type MyControls struct {
 	MainDialog *iup.Handle `IUP:"mainDialog"`
 	LocalRoot  *iup.Handle `IUP:"localRoot"`
 	Files      *iup.Handle
@@ -18,7 +18,7 @@ type MyWidgets struct {
 }
 
 var cmdChan chan string
-var myWidgets MyWidgets
+var myControls MyControls
 
 //---------
 
@@ -32,9 +32,9 @@ func idleFunc1() int {
 		fmt.Println("got something to do in idle: ", cmd)
 
 		if cmd == "addtofiles" {
-			myWidgets.Files.SetAttribute("APPENDITEM", "some filename, push pressed")
+			myControls.Files.SetAttribute("APPENDITEM", "some filename, push pressed")
 		} else {
-			myWidgets.LocalRoot.SetAttribute("VALUE", cmd)
+			myControls.LocalRoot.SetAttribute("VALUE", cmd)
 		}
 
 	case <-time.After(time.Duration(100 * time.Millisecond)):
@@ -55,7 +55,7 @@ func pushBtnCB() int {
 		time.Sleep(time.Duration(1) * time.Second)
 
 		// try to update GUI .. might not work if different thread !
-		myWidgets.Files.SetAttribute("APPENDITEM", "push pressed live")
+		myControls.Files.SetAttribute("APPENDITEM", "push pressed live")
 
 		// but this should work
 		cmdChan <- "addtofiles"
@@ -90,8 +90,8 @@ func createDialog() {
 		panic(errStr)
 	}
 
-	// get widgets handles into myWidgets
-	if err := iuputil.FetchWidgets(&myWidgets); err != nil {
+	// get controls handles into myControls
+	if err := iuputil.FetchControls(&myControls); err != nil {
 		panic(err)
 		return
 	}
@@ -123,7 +123,7 @@ func main() {
 	iup.SetIdleFunc(idleFunc1)
 
 	// show dialog and loop until last window closed
-	myWidgets.MainDialog.Show()
+	myControls.MainDialog.Show()
 	iup.MainLoop()
 
 }
